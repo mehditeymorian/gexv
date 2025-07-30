@@ -9,7 +9,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-const version = "v0.1.0"
+const version = "v0.1.1"
 
 var (
 	cfgFile               string
@@ -55,5 +55,9 @@ func init() {
 	rootCmd.Flags().StringVarP(&overrideConfig.Flags, "flags", "g", "", "list of flags to pass to regex. such as <gm> for global and multiline matching")
 	rootCmd.Flags().StringVarP(&inputFile, "file", "f", "", "Input file path")
 	rootCmd.Flags().StringVarP(&inputText, "text", "t", "", "Inline input text")
-	rootCmd.MarkPersistentFlagRequired("config")
+	rootCmd.MarkFlagsOneRequired("file", "text")
+	rootCmd.MarkFlagFilename("file")
+	rootCmd.MarkFlagFilename("config", "json")
+	rootCmd.MarkFlagFilename("output", "csv")
+
 }

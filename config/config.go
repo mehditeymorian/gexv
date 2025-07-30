@@ -2,8 +2,10 @@ package config
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
+	"os"
 )
 
 // Config is the regex pattern config
@@ -14,9 +16,17 @@ type Config struct {
 
 // LoadConfig reads and unmarshal the JSON config
 func LoadConfig(path string, overrideConfig *Config) (*Config, error) {
-	cfg, err := Load(path)
-	if err != nil {
-		return nil, fmt.Errorf("[gexv.LoadConfig] failed to load config: %w", err)
+	_, err := os.Stat(path)
+	if err != nil && !errors.Is(err, os.ErrNotExist) {
+		return nil, fmt.Errorf("[gexv.LoadConfig] failed to check config file stat: %w", err)
+	}
+
+	cfg := new(Config)
+	if !errors.Is(err, os.ErrNotExist) {
+		cfg, err = Load(path)
+		if err != nil {
+			return nil, fmt.Errorf("[gexv.LoadConfig] failed to load config: %w", err)
+		}
 	}
 
 	applyOverrides(cfg, overrideConfig)
